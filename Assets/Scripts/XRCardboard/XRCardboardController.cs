@@ -26,18 +26,33 @@ namespace XRCardboard
         private Vector2 _dragDegrees;
         private float _defaultFov;
 
+        public Transform CameraTransform => cameraTransform;
+        public Camera Camera => _camera;
+        
 #if UNITY_EDITOR
         private Vector3 _lastMousePos;
         private bool _vrActive;
         public bool VRActive => _vrActive;
 #endif
 
+        public static XRCardboardController Instance;
+        
         void Awake()
         {
-            _camera = cameraTransform.GetComponent<Camera>();
-            _poseDriver = cameraTransform.GetComponent<TrackedPoseDriver>();
-            _defaultFov = _camera.fieldOfView;
-            _initialRotation = cameraTransform.rotation;
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+                
+                _camera = cameraTransform.GetComponent<Camera>();
+                _poseDriver = cameraTransform.GetComponent<TrackedPoseDriver>();
+                _defaultFov = _camera.fieldOfView;
+                _initialRotation = cameraTransform.rotation;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
 
         void Start()
