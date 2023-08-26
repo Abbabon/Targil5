@@ -68,7 +68,7 @@ public class Enemy : MonoBehaviour
 
     public void Explode()
     {
-        AudioManager.Instance.PlaySoundEffect(_audioSource, SoundType.EnemyExplosion);
+        AudioManager.Instance.PlaySoundEffect(SoundType.EnemyExplosion);
         // TODO: effect
     }
 }

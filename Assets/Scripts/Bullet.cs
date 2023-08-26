@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections;
+using DataTypes;
 using Framework;
 using Managers;
 using UnityEngine;
@@ -31,6 +32,8 @@ public class Bullet : MonoBehaviour
 
         var forceVector = direction * _forceMultiplier;
         _rigidbody.AddForce(forceVector, ForceMode.Impulse);
+        
+        AudioManager.Instance.PlaySoundEffect(SoundType.Shoot);
     }
 
     public void SetPosition(Vector3 worldPosition)

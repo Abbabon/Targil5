@@ -9,7 +9,11 @@ namespace Managers
     
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            #if UNITY_EDITOR
+            if (GameManager.Instance.IsPlaying && Input.GetKeyDown(KeyCode.Space))
+            #else
+            if (GameManager.Instance.IsPlaying && Input.anyKeyDown)
+            #endif
             {
                 var newBullet = BulletSpawner.BaseInstance.Spawn();
             

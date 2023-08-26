@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using DataTypes;
 using Framework;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -7,15 +9,19 @@ namespace Managers
 {
     public class GameManager : MonoBehaviour
     {
-        [Header("Enemy Settings")] 
+        [Header("Enemy Settings")]
         [SerializeField] private List<Material> _materialsByHP;
-        [SerializeField] private List<Transform> _spawnPoints;
+        [SerializeField] private List<EnemySpawnPoint> _spawnPoints;
         [SerializeField] private float _minimumDelayBetweenSpanws;
         [SerializeField] private float _maxDelayBetweenSpanws;
         // TODO: difficulty multiplier
         
         private float _timeToNextSpawn;
         private bool _isPlaying;
+        public bool IsPlaying => _isPlaying;
+        
+        private int _score;
+        private float _timer;
         
         public static GameManager Instance { get; private set; }
         public string EnemyTag => "Enemy"; 
@@ -35,14 +41,33 @@ namespace Managers
 
         private void Start()
         {
-            // TODO: wait for 3 2 1 
             StartGame();
         }
-        
+
         private void StartGame()
         {
+            StartCoroutine(PlayerHUDManager.Instance.PlayCountdownAnimation());
+            StartCoroutine(WaitForAnimation());
+        }
+
+        private IEnumerator WaitForAnimation()
+        {
+            yield return new WaitForSeconds(PlayerHUDManager.Instance.AnimationDuration);
+            StartActualGame();
+        }
+
+        private void StartActualGame()
+        {
+            ResetSession();
             _isPlaying = true;
+            SpawnNewEnemy();
             SetNextSpawnTime();
+        }
+
+        private void ResetSession()
+        {
+            _score = 0;
+            _timer = 0;
         }
 
         public void Update()
@@ -55,6 +80,9 @@ namespace Managers
                     SpawnNewEnemy();
                     SetNextSpawnTime();
                 }
+
+                _timer += Time.deltaTime;
+                PlayerHUDManager.Instance.SetTime(_timer);
             }
         }
         
@@ -62,8 +90,9 @@ namespace Managers
         {
             var newEnemy = EnemySpawner.BaseInstance.Spawn();
             var spawnPoint = _spawnPoints.GetRandom();
-            newEnemy.Initialize(spawnPoint.position, GetRandomEnemyHealth());
+            newEnemy.Initialize(spawnPoint.transform.position, GetRandomEnemyHealth());
             newEnemy.UpdateMoving(true);
+            AudioManager.Instance.PlaySoundEffect(spawnPoint.AudioSource, SoundType.EnemySpawn);
         }
 
         private int GetRandomEnemyHealth()
@@ -95,6 +124,8 @@ namespace Managers
                 EnemySpawner.BaseInstance.Release(enemy);
                 
                 // increase score + hud
+                _score++;
+                PlayerHUDManager.Instance.SetScore(_score);
             }
         }
 
