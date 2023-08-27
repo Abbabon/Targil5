@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using DataTypes;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Managers
 {
     public class AudioManager : MonoBehaviour
     {
-        [SerializeField] private AudioSource _ambianceAudioSource;
+        [SerializeField] private AudioSource _ambianceMusicAudioSource;
+        [SerializeField] private AudioSource _ambianceSFXAudioSource;
         [SerializeField] private List<SoundDefinition> _soundDefinitions;
         
         private Dictionary<SoundType, AudioClip> _soundDefinitionsLookup;
@@ -51,8 +53,22 @@ namespace Managers
             var audioClip = GetSound(soundType);
             if (audioClip != null)
             {
-                _ambianceAudioSource.PlayOneShot(audioClip);
+                _ambianceSFXAudioSource.PlayOneShot(audioClip);
             }
+        }
+        
+        public void PlayMusic(SoundType soundType)
+        {
+            var audioClip = GetSound(soundType);
+            if (audioClip != null)
+            {
+                _ambianceMusicAudioSource.PlayOneShot(audioClip);
+            }
+        }
+
+        public void StopMusic()
+        {
+            _ambianceMusicAudioSource.Stop();
         }
     }
 }

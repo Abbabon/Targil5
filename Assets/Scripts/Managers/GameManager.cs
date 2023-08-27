@@ -58,6 +58,7 @@ namespace Managers
 
         private void StartActualGame()
         {
+            AudioManager.Instance.PlayMusic(SoundType.BattleMusic);
             ResetSession();
             _isPlaying = true;
             SpawnNewEnemy();
